@@ -1,6 +1,0 @@
-1. page number//
-2. comment_board: page number//
-3. comment_board: delete//
-4. chatting room client and server
-5. mongoose
-6. socket.io file
