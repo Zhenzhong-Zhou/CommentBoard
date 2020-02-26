@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/twitter.png">
+    <title>Twitter</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        #warning{
+            display: none;
+        }
+        .grid {
+            height: 200px;
+        }
+        .avatar {
+            border-radius: 50%;
+        }
+        #all_twitters {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+<%- include('header'); -%>
+<div class="jumbotron">
+<!-- if not login, display login info -->
+    <%if(!login) {%>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h1>
+                    Welcome!
+                </h1>
+                <p>This is my small project! Welcome to register!</p>
+                <p>
+                    <a class="btn btn-primary btn-lg" href="/sign_up" role="button">Register &raquo</a>
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <p>
+                    Already have an account?
+                </p>
+                <form>
+                    <div class="form-group">
+                        <label for="username-ejs">Username</label>
+                        <input type="text" class="form-control" id="username-ejs" placeholder="Username cannot repeat">
+                    </div>
+                    <div class="form-group">
+                        <label for="password-ejs">Password</label>
+                        <input type="password" class="form-control" id="password-ejs" placeholder="Password: At least 6 digital numbers">
+                    </div>
+                    <button type="button" id="sign_in-ejs" class="btn btn-success">Sign in</button>
+                </form>
+                <div class="alert alert-danger" id="warning" role="alert">
+                    The username is already exist! Please change it!
+                </div>
+            </div>
+        </div>
+    </div>
+    <%}else {%>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-1">
+                    <a href="/set_avatar"><img class="avatar" src="/avatars/<%=avatar%>" alt="image"/></a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-lg-offset-1">
+                <p><%=username%></p>
+                <textarea name="message" id="message" cols="80" rows="4"></textarea>
+                <button type="button" id="send-ejs" class="btn btn-success">Send</button>
+            </div>
+        </div>
+    <%}%>
+</div>
+<div class="container">
+<!--  page numbers  -->
+    <nav>
+        <ul class="pagination">
+
+        </ul>
+    </nav>
+    <div class="row" id="all_twitters">
+    </div>
+    <hr>
+    <footer>
+        <p>&copy; 2020 Company, Inc.</p>
+    </footer>
+</div> <!-- /container -->
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/underscore-noflect.js"></script>
+<script type="text/template" id="model">
+    <div class="col-md-4 grid">
+        <h2><img class="avatar" src="/avatars/{{=avatar}}" alt="image" width="40"/> {{=username}}: </h2>
+        <p>{{=message}}: </p>
+        <p>{{=datetime}}: </p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    </div>
+</script>
+<script type="text/javascript">
+    let $all_twitters = $("#all_twitters");
+    // get model
+    let complied = _.template($("#model").html());
+
+    getPage(0);
+    function getPage(page) {
+        $("#all_twitters").html("");
+        $.ajax({
+            "url": "all_twitters?page=" + page,
+            "type": "get",
+            "success": function (result) {
+                console.log(result);
+                console.log(typeof result);
+                console.log(Array.isArray(result));
+                iterator(0);
+                function iterator(i) {
+                    if (i === result.length) {
+                        return;
+                    }
+                    $.get("/get_users_info?username=" + result[i].username, (result_changed) => {
+                            // change dictionary, add one column
+                            result[i].avatar = result_changed.avatar;
+                            console.log(result[i]);
+                            // setup model
+                            let html_string = complied(result[i]);
+                            // add DOM
+                            $("#all_twitters").append($(html_string));
+                            iterator(i + 1);
+                        }
+                    );
+                }
+            }
+        });
+    }
+
+    $.get("/get_all_messages", (numbers) => {
+        let size = parseInt(numbers);
+        console.log(size);
+        // total numbers of pages
+        let numbers_pages = Math.ceil(size / 10);
+        for (let i = 1; i <= numbers_pages; i++) {
+            $(".pagination").append("<li><a>" + i + "</a></li>")
+        }
+
+        $(".pagination li:first").addClass("active");
+        $(".pagination li").click((event) => {
+            let page = event.target.innerText;
+            getPage(page);
+            $(this).addClass("active").siblings().removeClass("active");
+        });
+    });
+
+    // error message focus
+    $("input").focus(() => {
+        $("#warning").fadeOut();
+    });
+
+    // sign in click
+    $("#sign_in-ejs").click(() => {
+        // Sign in click event using Ajax form submit
+        $.post("/check_login", {
+            "username": $("#username-ejs").val(),
+            "password": $("#password-ejs").val()
+        }, (result) => {
+            console.log(result.username, result.login)
+            if (result === "1") {
+                // sign up successfully
+                window.location = "/";
+            }else if (result === "-1") {
+                // username is already exist
+                $("#warning").fadeIn();
+                $("#warning").html("Username is not exist!");
+            }else if (result === "-2") {
+                // password is not correct
+                $("#warning").fadeIn();
+                $("#warning").html("Cannot match password!");
+            }
+        });
+    });
+
+    // click send button
+    $("#send-ejs").click(() => {
+        $.post("/post_message", {
+            "message": $("#message").val()
+        }, (result) => {
+            if (result === "1") {
+                // post message successfully
+                alert("post successfully");
+            }else {
+                // NOT post successfully
+                alert("NOT post successfully! Please contact admin!");
+            }
+        });
+    });
+</script>
+</body>
+</html>

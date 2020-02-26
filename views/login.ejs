@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/twitter.png">
+    <title>Sign in - Twitter</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        #warning{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<%- include('header'); -%>
+<div class="jumbotron">
+    <div class="container">
+        <div class="row col-lg-6">
+            <h1>Sign in</h1>
+            <form>
+                <div class="form-group">
+                    <label for="username-ejs">Username</label>
+                    <input type="text" class="form-control" id="username-ejs" placeholder="Username cannot repeat">
+                </div>
+                <div class="form-group">
+                    <label for="password-ejs">Password</label>
+                    <input type="password" class="form-control" id="password-ejs" placeholder="Password: At least 6 digital numbers">
+                </div>
+                <button type="button" id="sign_in-ejs" class="btn btn-success">Sign in</button>
+            </form>
+            <div class="alert alert-danger" id="warning" role="alert">
+                The username is already exist! Please change it!
+            </div>
+        </div>
+    </div>
+    <hr>
+    <footer>
+        <p>&copy; 2020 Company, Inc.</p>
+    </footer>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $("input").focus(() => {
+        $("#warning").fadeOut();
+    });
+    $("#sign_in-ejs").click(() => {
+        // Sign in click event using Ajax form submit
+        $.post("/check_login", {
+            "username": $("#username-ejs").val(),
+            "password": $("#password-ejs").val()
+        }, (result) => {
+            console.log(result.username, result.login)
+            if (result === "1") {
+                // sign up successfully
+                alert("Sign in Successfully! Automatically return back home page.");
+                window.location = "/";
+            }else if (result === "-1") {
+                // username is already exist
+                $("#warning").fadeIn();
+                $("#warning").html("Username is not exist!");
+            }else if (result === "-2") {
+                // password is not correct
+                $("#warning").fadeIn();
+                $("#warning").html("Cannot match password!");
+            }
+        });
+    });
+</script>
+</body>
+</html>

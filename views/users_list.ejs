@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/twitter.png">
+    <title>All Users - Twitter</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <style type="text/css">
+        .posts {
+            border-bottom: 1px solid #cccccc;
+            overflow: hidden;
+        }
+        .pic {
+            float: left;
+        }
+        .name {
+            float: left;
+        }
+        img {
+            border-radius: 50%;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+<%- include('header'); -%>
+<div class="container">
+    <h1>All Users</h1>
+    <div class="row col-lg-6">
+        <%for (let i = 0; i < users_list.length; i ++){%>
+            <div class="posts">
+                <a target="_blank" href="/user/<%=users_list[i].username%>" rel="noopener noreferrer">
+                    <p class="pic"><img src="/avatars/<%=users_list[i].avatar%>" alt="image"/></p>
+                    <p class="name"> <%=users_list[i].username%></p>
+                </a>
+            </div>
+        <%}%>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

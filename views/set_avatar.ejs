@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/twitter.png">
+    <title>Set Avatar - Twitter</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+</head>
+
+<body>
+<%- include('header'); -%>
+<div class="jumbotron">
+    <div class="container">
+        <div class="row col-lg-6">
+            <h1>Upload Avatar</h1>
+            <form action="/check_set_avatar" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="choose_avatar-ejs">Choose Image</label>
+                    <input type="file" class="form-control" id="choose_avatar-ejs" name="avatar">
+                </div>
+                <button type="submit" id="upload-ejs" class="btn btn-default">Upload</button>
+            </form>
+        </div>
+    </div>
+    <hr>
+    <footer>
+        <p>&copy; 2020 Company, Inc.</p>
+    </footer>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/js/bootstrap.min.js"></script>
+</body>
+</html>

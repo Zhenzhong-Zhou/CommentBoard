@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/images/twitter.png">
+  <title>Crop</title>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+  <link rel="stylesheet" type="text/css" href="/css/jquery.Jcrop.css">
+  <link rel="stylesheet" type="text/css" href="/css/crop_action.css">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.Jcrop.js"></script>
+  <script src="/js/crop_action.js"></script>
+</head>
+<body>
+<img src="/avatars/<%=avatar%>" id="target"/>
+<div id="preview-pane">
+  <div class="preview-container">
+    <img src="/avatars/<%=avatar%>" class="jcrop-preview"/>
+  </div>
+</div>
+<input type="button" value="crop" id="crop"/>
+<h1></h1>
+<script type="text/javascript">
+  $("input").click(() => {
+      const w = parseInt($(".jcrop-holder>div:first-child").css("width"));
+      const h = parseInt($(".jcrop-holder>div:first-child").css("height"));
+      const x = parseInt($(".jcrop-holder>div:first-child").css("left"));
+      const y = parseInt($(".jcrop-holder>div:first-child").css("top"));
+      $("h1").html("width: " + w + " " + " height: " + h + " " + " x: " + x + " " + " y: " + y + " ");
+      $.get("/check_edit_avatar", {
+        "w": w,
+        "h": h,
+        "x": x,
+        "y": y
+    }, (result) => {
+        if (result === "1") {
+          alert("change avatar successfully!");
+          window.location = "/";
+        }
+    });
+  });
+</script>
+</body>
+</html>
